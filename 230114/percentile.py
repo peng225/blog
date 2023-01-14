@@ -45,9 +45,6 @@ def plot(title, plotXData, plotYData, percentiles):
     plt.savefig(title.replace(" ", "_").lower() + ".png", dpi=200)
 
 def main():
-    argvs = sys.argv
-    argc = len(argvs)
-
     numSamplings = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
     percentiles = [1, 10, 50, 90, 99]
     dists = {
