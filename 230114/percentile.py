@@ -55,6 +55,7 @@ def main():
     for distName, dist in dists.items():
         print("dist: {}".format(distName))
         plotXData, plotYData = calcPlotData(numSamplings, percentiles, dist)
+        print(plotYData)
         plot(distName, plotXData, plotYData, percentiles)
 
 if __name__ == "__main__":
