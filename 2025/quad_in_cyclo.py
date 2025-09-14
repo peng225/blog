@@ -5,11 +5,15 @@ import sys
 
 def main():
     args = sys.argv
-    if len(args) != 2 or not args[1].isdigit():
-        print("usage: {} <square free integer>".format(argv[0]))
+    if len(args) != 2 or not is_integer(args[1]):
+        print("usage: {} <square free integer>".format(args[0]))
         sys.exit(1)
 
-    m = int(args[1])
+    m = Integer(args[1])
+    if m == 1:
+        print("m should not be 1 by definition of quadratic field.")
+        sys.exit(1)
+
     if not m.is_squarefree():
         print("{} is not square free.".format(m))
         sys.exit(1)
@@ -18,15 +22,13 @@ def main():
     if m % 4 == 2 or m % 4 == 3:
         N = 4 * abs(m)
     L = CyclotomicField(N)
-    # TODO: really must have one generator?
-    # I just want zeta_N.
-    if len(L.gens()) != 1:
-        print("More than 1 generator found for L: {}".format(L.gens()))
-        sys.exit(1)
     galois_group = L.galois_group()
+    # Because Q(sqrt{m})/Q is Galois extension,
+    # the corresponding subgroup of Gal(Q(zeta_N)/Q)
+    # must be a normal subgroup.
     normal_subgroups = galois_group.normal_subgroups()
 
-    quad_sub_field = findQuadraticSubfield(L, m)
+    quad_sub_field = find_quadratic_subfield(L, m)
     if quad_sub_field is None:
         print("Failed to find quadratic subfield.")
         sys.exit(1)
@@ -34,26 +36,33 @@ def main():
     for nsg in normal_subgroups:
         # The index of subgroup corresponding to the quadratic field
         # must be 2.
-        if subgroupIndex(galois_group, nsg) != 2:
+        if subgroup_index(galois_group, nsg) != 2:
             continue
 
-        if not fixQuadraticSubField(quad_sub_field, nsg):
+        if not fix_quadratic_subField(quad_sub_field, nsg):
             continue
 
-        print("Found: {}".format(nsg))
-        print(convertToMultGroupOfZOverNZ(nsg, L.gen()))
+        print("Galois subgroup: {}".format(nsg))
+        print("Corresponding element(s) in (Z/NZ)^x: {}".format(convert_to_mult_group_of_Z_over_NZ(nsg, L.gen())))
 
-def findQuadraticSubfield(L, m):
-    K.<sqrt_m> = QuadraticField(m)
-    for sub in L.subfields(2):
+def is_integer(s: str) -> bool:
+    try:
+        int(s)
+        return True
+    except ValueError:
+        return False
+
+def find_quadratic_subfield(cyclotomic_field, m):
+    K = QuadraticField(m)
+    for sub in cyclotomic_field.subfields(2):
         if sub[0].is_isomorphic(K):
             return sub[0]
     return None
 
-def subgroupIndex(G, SG):
-    return G.order() / SG.order()
+def subgroup_index(group, subgroup):
+    return group.order() / subgroup.order()
 
-def fixQuadraticSubField(quad_sub_field, galois_subgroup):
+def fix_quadratic_subField(quad_sub_field, galois_subgroup):
     gens = quad_sub_field.gens()
     for e in galois_subgroup:
         for g in gens:
@@ -61,10 +70,12 @@ def fixQuadraticSubField(quad_sub_field, galois_subgroup):
                 return False
     return True
 
-def convertToMultGroupOfZOverNZ(galois_subgroup, zeta_N):
+def convert_to_mult_group_of_Z_over_NZ(galois_subgroup, zeta_N):
     ret = []
     for e in galois_subgroup:
         tmp= e(zeta_N)
+        # tmp is in form of zeta_N^n.
+        # The follow calculation is finding n.
         n = 0
         while tmp != 1:
             tmp = tmp / zeta_N
