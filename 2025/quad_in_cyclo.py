@@ -82,6 +82,7 @@ def convert_to_mult_group_of_Z_over_NZ(galois_subgroup, zeta_N):
             tmp = tmp / zeta_N
             n += 1
         ret.append(n)
+    ret.sort()
     return ret
 
 if __name__ == "__main__":
