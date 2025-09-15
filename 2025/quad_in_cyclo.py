@@ -21,6 +21,7 @@ def main():
     N = abs(m)
     if m % 4 == 2 or m % 4 == 3:
         N = 4 * abs(m)
+    print("N: {}".format(N))
     L = CyclotomicField(N)
     galois_group = L.galois_group()
     # Because Q(sqrt{m})/Q is Galois extension,
