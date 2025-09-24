@@ -40,7 +40,7 @@ def main():
         if subgroup_index(galois_group, nsg) != 2:
             continue
 
-        if not fix_quadratic_subField(quad_sub_field, nsg):
+        if not fix_quadratic_subfield(quad_sub_field, nsg):
             continue
 
         print("Galois subgroup: {}".format(nsg))
@@ -63,7 +63,7 @@ def find_quadratic_subfield(cyclotomic_field, m):
 def subgroup_index(group, subgroup):
     return group.order() / subgroup.order()
 
-def fix_quadratic_subField(quad_sub_field, galois_subgroup):
+def fix_quadratic_subfield(quad_sub_field, galois_subgroup):
     gens = quad_sub_field.gens()
     for e in galois_subgroup:
         for g in gens:
@@ -74,7 +74,7 @@ def fix_quadratic_subField(quad_sub_field, galois_subgroup):
 def convert_to_mult_group_of_Z_over_NZ(galois_subgroup, zeta_N):
     ret = []
     for e in galois_subgroup:
-        tmp= e(zeta_N)
+        tmp = e(zeta_N)
         # tmp is in form of zeta_N^n.
         # The follow calculation is finding n.
         n = 0
